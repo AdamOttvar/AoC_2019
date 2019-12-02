@@ -5,21 +5,22 @@ def execute_one_op(sequence_index):
     if opcode == 99:
         print("Program halted")
         print(sequence[0])
-        return False
-
-    arg1 = sequence[sequence[sequence_index+1]]
-    arg2 = sequence[sequence[sequence_index+2]]
-    result_addr = sequence[sequence_index+3]
-
-    if opcode == 1:
+        return -1
+    elif opcode == 1:
+        arg1 = sequence[sequence[sequence_index+1]]
+        arg2 = sequence[sequence[sequence_index+2]]
+        result_addr = sequence[sequence_index+3]
         sequence[result_addr] = arg1 + arg2
-        return True
+        return sequence_index + 4
     elif opcode == 2:
+        arg1 = sequence[sequence[sequence_index+1]]
+        arg2 = sequence[sequence[sequence_index+2]]
+        result_addr = sequence[sequence_index+3]
         sequence[result_addr] = arg1 * arg2
-        return True
+        return sequence_index + 4
     else:
         print("Something went wrong!")
-        return False
+        return -1
 
 with open('input2.txt') as input_file:
     intcode = input_file.read().strip().split(',')
@@ -30,7 +31,5 @@ sequence[1] = 12
 sequence[2] = 2
 
 sequence_index = 0
-keep_going = True
-while keep_going:
-    keep_going = execute_one_op(sequence_index)
-    sequence_index += 4
+while sequence_index >= 0:
+    sequence_index = execute_one_op(sequence_index)
