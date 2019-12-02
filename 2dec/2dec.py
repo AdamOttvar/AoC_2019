@@ -47,6 +47,7 @@ print(first_answer)
 # Second task
 list_of_nouns = range(100)
 list_of_verbs = range(100)
+keep_on_going = True
 
 for noun in list_of_nouns:
     for verb in list_of_verbs:
@@ -59,9 +60,8 @@ for noun in list_of_nouns:
             print("=== Second answer: ")
             print("Noun: {}   Verb: {}".format(noun, verb))
             print("Solution: {}".format(100 * noun + verb))
+            keep_on_going = False
             break
-    else:
-        # Continue if the inner loop wasn't broken.
-        continue
-    # Inner loop was broken, break the outer.
-    break
+
+    if not keep_on_going:
+        break
