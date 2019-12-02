@@ -32,36 +32,40 @@ def execute_complete_program(seq):
         return -1
 
 
+def first_task():
+    sequence = sequence_orig.copy()
+    sequence[1] = 12
+    sequence[2] = 2
+    first_answer = execute_complete_program(sequence)
+    print("=== First answer: ")
+    print(first_answer)
+
+
+def second_task():
+    list_of_nouns = range(100)
+    list_of_verbs = range(100)
+    keep_on_going = True
+
+    for noun in list_of_nouns:
+        for verb in list_of_verbs:
+            sequence = sequence_orig.copy()
+            sequence[1] = noun
+            sequence[2] = verb
+            second_answer = execute_complete_program(sequence)
+            
+            if second_answer == 19690720:
+                print("=== Second answer: ")
+                print("Noun: {}   Verb: {}".format(noun, verb))
+                print("Solution: {}".format(100 * noun + verb))
+                keep_on_going = False
+                break
+
+        if not keep_on_going:
+            break
+
 with open('input2.txt') as input_file:
     intcode = input_file.read().strip().split(',')
     sequence_orig = [int(i) for i in intcode]
 
-# First task
-sequence = sequence_orig.copy()
-sequence[1] = 12
-sequence[2] = 2
-first_answer = execute_complete_program(sequence)
-print("=== First answer: ")
-print(first_answer)
-
-# Second task
-list_of_nouns = range(100)
-list_of_verbs = range(100)
-keep_on_going = True
-
-for noun in list_of_nouns:
-    for verb in list_of_verbs:
-        sequence = sequence_orig.copy()
-        sequence[1] = noun
-        sequence[2] = verb
-        second_answer = execute_complete_program(sequence)
-        
-        if second_answer == 19690720:
-            print("=== Second answer: ")
-            print("Noun: {}   Verb: {}".format(noun, verb))
-            print("Solution: {}".format(100 * noun + verb))
-            keep_on_going = False
-            break
-
-    if not keep_on_going:
-        break
+first_task()
+second_task()
