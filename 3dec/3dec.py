@@ -1,6 +1,4 @@
 #!python3
-import numpy as np
-
 def split_instruction(instruction):
     head = instruction.rstrip('0123456789')
     tail = instruction[len(head):]
@@ -54,25 +52,26 @@ def run_wire(wire_instructions, start_coord, wire_nbr):
         current_coordinate = run_one_instruction(instruction, current_coordinate, wire_nbr, start_coord)
 
 
-with open('input3.txt') as input_file:
-    wire_paths = input_file.read().strip().split()
+def first_task():
+    with open('input3.txt') as input_file:
+        wire_paths = input_file.read().strip().split()
 
-for index in range(len(wire_paths)):
-    wire_paths[index] = [split_instruction(instruction) for instruction in wire_paths[index].split(',')]
+    for index in range(len(wire_paths)):
+        wire_paths[index] = [split_instruction(instruction) for instruction in wire_paths[index].split(',')]
 
-"""
-wire1 = 'R75,D30,R83,U83,L12,D49,R71,U7,L72'
-wire2 = 'U62,R66,U55,R34,D71,R55,D58,R83'
-wire_path1 = [split_instruction(instruction) for instruction in wire1.split(',')]
-wire_path2 = [split_instruction(instruction) for instruction in wire2.split(',')]
-wire_paths = [wire_path1, wire_path2]
-"""
+    """
+    wire1 = 'R75,D30,R83,U83,L12,D49,R71,U7,L72'
+    wire2 = 'U62,R66,U55,R34,D71,R55,D58,R83'
+    wire_path1 = [split_instruction(instruction) for instruction in wire1.split(',')]
+    wire_path2 = [split_instruction(instruction) for instruction in wire2.split(',')]
+    wire_paths = [wire_path1, wire_path2]
+    """
+    run_wire(wire_paths[0], start_coord, 1)
+    run_wire(wire_paths[1], start_coord, 2)
+    print(min_distance)
 
 global_schema = {}
 start_coord = [0, 0]
 min_distance = 99999999999
+first_task()
 
-first_wire_coord = run_wire(wire_paths[0], start_coord, 1)
-also_second_wire_coord = run_wire(wire_paths[1], start_coord, 2)
-
-print(min_distance)
