@@ -6,13 +6,13 @@ def check_combination(number):
     previous_digit = 0
     repeated_digit_counter = 0
     for digit in [int(d) for d in str(number)]:
+        if digit < previous_digit:
+            return False
         if digit in repeated_digits:
             repeated_digits[digit] = repeated_digits[digit] + 1
         if digit not in unique_digits:
             unique_digits.append(digit)
             repeated_digits[digit] = 1
-        if digit < previous_digit:
-            return False
         previous_digit = digit
 
     if len(unique_digits) == 6:
