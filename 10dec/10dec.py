@@ -6,6 +6,8 @@ class AsteroidMap(object):
         self.asteroid_coords = []
         self.asteroid_sightings = {}
         self.asteroid_nbr_of_sightings = {}
+        self.vaporized_astroids = []
+        self.asteroid_station = None
 
     def read_map(self, file):
         with open(file) as input_file:
@@ -21,10 +23,14 @@ class AsteroidMap(object):
     def calculate_diff(self, x0, x1, y0, y1):
         dx = x1 - x0
         dy = y1 - y0
-        if dx > 0:
-            half_side = 'R'
+        if dx > 0 and dy < 0:
+            quarter = 'RU'
+        elif dx > 0 and dy > 0:
+            quarter = 'RD'
+        elif dx < 0 and dy > 0:
+            quarter = 'LD'
         else:
-            half_side = 'L'
+            quarter = 'LU'
         if dy == 0:
             if dx < 0:
                 return 'L'
@@ -37,7 +43,7 @@ class AsteroidMap(object):
                 return 'D'
         else:
             dxdy = dx/dy
-            return half_side + str(dxdy)
+            return quarter + str(dxdy)
 
     def calculate_distance(self, x0, x1, y0, y1):
         dx = x1 - x0
@@ -69,20 +75,81 @@ class AsteroidMap(object):
         for asteroid in self.asteroid_sightings:
             self.asteroid_nbr_of_sightings[asteroid] = len(self.asteroid_sightings[asteroid])
 
-    def print_max(self):
+    def get_max(self):
         max_sightings = 0
         best_asteroid = None
         for asteroid, value in self.asteroid_nbr_of_sightings.items():
             if value > max_sightings:
                 max_sightings = value
                 best_asteroid = asteroid
-        print("Asteroid: {}, Sightings: {}".format(best_asteroid,max_sightings))
+        return best_asteroid, max_sightings
+
+    def place_station(self, asteroid):
+        self.asteroid_station = asteroid
+
+    def spin_lazer_once(self):
+        asteroid_sightings = self.asteroid_sightings[self.asteroid_station]
+        list_of_keys = [*self.asteroid_sightings[self.asteroid_station]]
+        list_of_RU_keys = [float(value[2:]) for value in list_of_keys if 'RU' in value]
+        list_of_RU_keys.sort(reverse=True)
+        list_of_RD_keys = [float(value[2:]) for value in list_of_keys if 'RD' in value]
+        list_of_RD_keys.sort(reverse=True)
+        list_of_LD_keys = [float(value[2:]) for value in list_of_keys if 'LD' in value]
+        list_of_LD_keys.sort(reverse=True)
+        list_of_LU_keys = [float(value[2:]) for value in list_of_keys if 'LU' in value]
+        list_of_LU_keys.sort(reverse=True)
+        if 'U' in asteroid_sightings:
+            self.asteroid_coords.remove(asteroid_sightings['U'][0])
+            self.vaporized_astroids.append(asteroid_sightings['U'][0])
+        for asteroid in list_of_RU_keys:
+            key = 'RU' + str(asteroid)
+            self.asteroid_coords.remove(asteroid_sightings[key][0])
+            self.vaporized_astroids.append(asteroid_sightings[key][0])
+        if 'R' in asteroid_sightings:
+            self.asteroid_coords.remove(asteroid_sightings['R'][0])
+            self.vaporized_astroids.append(asteroid_sightings['R'][0])
+        for asteroid in list_of_RD_keys:
+            key = 'RD' + str(asteroid)
+            self.asteroid_coords.remove(asteroid_sightings[key][0])
+            self.vaporized_astroids.append(asteroid_sightings[key][0])
+        if 'D' in asteroid_sightings:
+            self.asteroid_coords.remove(asteroid_sightings['D'][0])
+            self.vaporized_astroids.append(asteroid_sightings['D'][0])
+        for asteroid in list_of_LD_keys:
+            key = 'LD' + str(asteroid)
+            self.asteroid_coords.remove(asteroid_sightings[key][0])
+            self.vaporized_astroids.append(asteroid_sightings[key][0])
+        if 'L' in asteroid_sightings:
+            self.asteroid_coords.remove(asteroid_sightings['L'][0])
+            self.vaporized_astroids.append(asteroid_sightings['L'][0])
+        for asteroid in list_of_LU_keys:
+            key = 'LU' + str(asteroid)
+            self.asteroid_coords.remove(asteroid_sightings[key][0])
+            self.vaporized_astroids.append(asteroid_sightings[key][0])
+
 
 def first_task():
     asteroid_map = AsteroidMap()
     asteroid_map.read_map('input10.txt')
     asteroid_map.calculate_asteroids()
     asteroid_map.count_sightings()
-    asteroid_map.print_max()
+    best_asteroid, max_sightings = asteroid_map.get_max()
+    print("First answer: ")
+    print(best_asteroid)
+    print(max_sightings)
 
-first_task()
+def second_task():
+    asteroid_map = AsteroidMap()
+    asteroid_map.read_map('input10.txt')
+    asteroid_map.calculate_asteroids()
+    asteroid_map.count_sightings()
+    best_asteroid, max_sightings = asteroid_map.get_max()
+    asteroid_map.place_station(best_asteroid)
+    asteroid_map.spin_lazer_once()
+    while len(asteroid_map.vaporized_astroids) < 299:
+        asteroid_map.calculate_asteroids()
+        asteroid_map.spin_lazer_once()
+
+    print(asteroid_map.vaporized_astroids[199])
+
+second_task()
