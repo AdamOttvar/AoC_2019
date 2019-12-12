@@ -149,24 +149,46 @@ class IntcodeComputer:
             print("Something went wrong!")
             return -1
 
+def print_panels(panels):
+    printed_panels = []
+    all_panels = [*panels]
+    x_values = [x[0] for x in all_panels]
+    max_x = max(x_values)
+    min_x = min(x_values)
+    y_values = [x[1] for x in all_panels]
+    max_y = max(y_values)
+    min_y = min(y_values)
+    row = ['.']*(max_x-min_x+1)
+
+    for i in range(max_y, abs(min_y)+1):
+        printed_panels.append(row)
+
+    for panel in all_panels:
+        print(panel)
+        panel_color = '#' if panels[panel] else '.'
+        printed_panels[abs(panel[1])][panel[0]] = panel_color
+    for row in printed_panels:
+        print(''.join(row))
+    #for panel in panels:
+    #pass
 
 def first_task():
     panel_map = {}
-    robot_position = [0, 0]
+    robot_position = (0, 0)
     headings = ['U', 'R', 'D', 'L']
     robot_heading = 'U'
-    panel_color = 1
-    panel_map[str(robot_position)] = 1
+    panel_color = 0
+    panel_map[robot_position] = panel_color
     paint_robot = IntcodeComputer()
     paint_robot.read_input('input11.txt')
 
     terminated = False
     while not terminated:
-        if str(robot_position) in panel_map:
-            panel_color = panel_map[str(robot_position)]
+        if robot_position in panel_map:
+            panel_color = panel_map[robot_position]
         else:
-            panel_color = 1
-            panel_map[str(robot_position)] = 1
+            panel_color = 0
+            panel_map[robot_position] = panel_color
 
         paint_robot.input = panel_color
 
@@ -176,7 +198,7 @@ def first_task():
             continue
 
         color_to_paint = paint_robot.get_output()
-        panel_map[str(robot_position)] = color_to_paint
+        panel_map[robot_position] = color_to_paint
 
         return_code = paint_robot.execute_complete_program()
         if return_code == 1:
@@ -194,19 +216,77 @@ def first_task():
             robot_heading = 'U' if direction_to_move else 'D'
 
         if robot_heading == 'U':
-            robot_position[1] += 1
+            robot_position = (robot_position[0],robot_position[1]+1)
+            #robot_position[1] += 1
         elif robot_heading == 'R':
-            robot_position[0] += 1
+            robot_position = (robot_position[0]+1,robot_position[1])
+            #robot_position[0] += 1
         elif robot_heading == 'D':
-            robot_position[1] -= 1
+            robot_position = (robot_position[0],robot_position[1]-1)
+            #robot_position[1] -= 1
         elif robot_heading == 'L':
-            robot_position[0] -= 1
+            robot_position = (robot_position[0]-1,robot_position[1])
+            #robot_position[0] -= 1
 
-
-    print(panel_map)
     print(len(panel_map))
 
+def second_task():
+    panel_map = {}
+    robot_position = (0, 0)
+    headings = ['U', 'R', 'D', 'L']
+    robot_heading = 'U'
+    panel_color = 1
+    panel_map[robot_position] = panel_color
+    paint_robot = IntcodeComputer()
+    paint_robot.read_input('input11.txt')
 
+    terminated = False
+    while not terminated:
+        if robot_position in panel_map:
+            panel_color = panel_map[robot_position]
+        else:
+            panel_color = 0
+            panel_map[robot_position] = panel_color
 
+        paint_robot.input = panel_color
 
-first_task()
+        return_code = paint_robot.execute_complete_program()
+        if return_code == 1:
+            terminated = True
+            continue
+
+        color_to_paint = paint_robot.get_output()
+        panel_map[robot_position] = color_to_paint
+
+        return_code = paint_robot.execute_complete_program()
+        if return_code == 1:
+            terminated = True
+            continue
+
+        direction_to_move = paint_robot.get_output()
+        if robot_heading == 'U':
+            robot_heading = 'R' if direction_to_move else 'L'
+        elif robot_heading == 'R':
+            robot_heading = 'D' if direction_to_move else 'U'
+        elif robot_heading == 'D':
+            robot_heading = 'L' if direction_to_move else 'R'
+        elif robot_heading == 'L':
+            robot_heading = 'U' if direction_to_move else 'D'
+
+        if robot_heading == 'U':
+            robot_position = (robot_position[0],robot_position[1]+1)
+            #robot_position[1] += 1
+        elif robot_heading == 'R':
+            robot_position = (robot_position[0]+1,robot_position[1])
+            #robot_position[0] += 1
+        elif robot_heading == 'D':
+            robot_position = (robot_position[0],robot_position[1]-1)
+            #robot_position[1] -= 1
+        elif robot_heading == 'L':
+            robot_position = (robot_position[0]-1,robot_position[1])
+            #robot_position[0] -= 1
+
+    print(len(panel_map))
+    print_panels(panel_map)
+
+second_task()
