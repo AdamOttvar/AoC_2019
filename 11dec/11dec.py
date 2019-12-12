@@ -161,16 +161,16 @@ def print_panels(panels):
     row = ['.']*(max_x-min_x+1)
 
     for i in range(max_y, abs(min_y)+1):
-        printed_panels.append(row)
+        printed_panels.append(row.copy())
 
     for panel in all_panels:
-        print(panel)
         panel_color = '#' if panels[panel] else '.'
         printed_panels[abs(panel[1])][panel[0]] = panel_color
+
     for row in printed_panels:
         print(''.join(row))
-    #for panel in panels:
-    #pass
+
+
 
 def first_task():
     panel_map = {}
