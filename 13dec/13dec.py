@@ -177,4 +177,49 @@ def first_task():
     print(nbr_of_block_tiles)
 
 
-first_task()
+def second_task():
+    arcade = IntcodeComputer()
+    arcade.read_input('input13.txt')
+    arcade.sequence[0] = 2
+
+    terminated = False
+    nbr_of_outputs = 0
+    output_of_threes = []
+    nbr_of_block_tiles = 0
+    player_score = 0
+    ball_x_pos = 0
+    padel_x_pos = 0
+    while not terminated:
+        return_code = arcade.execute_complete_program()
+        if return_code == 1:
+            terminated = True
+            continue
+
+        output = arcade.get_output()
+        output_of_threes.append(output)
+        nbr_of_outputs += 1
+        if nbr_of_outputs == 3:
+            if output_of_threes[2] == 3:
+                padel_x_pos = output_of_threes[0]
+            elif output_of_threes[2] == 4:
+                ball_x_pos = output_of_threes[0]
+
+            if output_of_threes[0] == -1 and output_of_threes[1] == 0:
+                player_score = output_of_threes[2]
+
+            if padel_x_pos < ball_x_pos:
+                joystick = 1
+            elif padel_x_pos > ball_x_pos:
+                joystick = -1
+            else:
+                joystick = 0
+
+            arcade.input = joystick
+
+            output_of_threes = []
+            nbr_of_outputs = 0
+
+    print(player_score)
+
+
+second_task()
