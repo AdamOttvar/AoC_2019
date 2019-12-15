@@ -231,7 +231,7 @@ def first_task():
     droid_map = []
     droid_graph = {}
     droid_position = [0,0]
-    droid_map.append(droid_position.copy())
+    droid_map.append((droid_position[0],droid_position[1]))
     wall_positions = []
     direction = 1
     oxygen_position = [0,0]
@@ -290,7 +290,7 @@ def second_task():
     droid_map = []
     droid_graph = {}
     droid_position = [0,0]
-    droid_map.append(droid_position.copy())
+    droid_map.append((droid_position[0],droid_position[1]))
     wall_positions = []
     direction = 1
     oxygen_position = [0,0]
@@ -337,9 +337,41 @@ def second_task():
         if droid_position == [0,0]:
             terminated = True
 
-    path = list(bfs_paths(droid_graph, (0,0), (oxygen_position[0],oxygen_position[1])))[0] # [['A', 'C', 'F'], ['A', 'B', 'E', 'F']]
-    plot_path(droid_map, wall_positions, oxygen_position, path)
-    print(len(path)-1)
+    droid_map = list(set(droid_map))
+    oxygen_filled = [(oxygen_position[0],oxygen_position[1])]
+    filling_with_oxygen = []
+    droid_map.remove(oxygen_filled[0])
+    minutes = 0
 
-first_task()
+    still_left = True
+    while still_left:
+        minutes += 1
+        oxygen_filled.extend(filling_with_oxygen)
+        filling_with_oxygen = []
+        for coord in oxygen_filled:
+            check_coord = (coord[0]+1, coord[1])
+            if check_coord in droid_map:
+                droid_map.remove(check_coord)
+                filling_with_oxygen.append(check_coord)
+            
+            check_coord = (coord[0]-1, coord[1])
+            if check_coord in droid_map:
+                droid_map.remove(check_coord)
+                filling_with_oxygen.append(check_coord)
+            
+            check_coord = (coord[0], coord[1]+1)
+            if check_coord in droid_map:
+                droid_map.remove(check_coord)
+                filling_with_oxygen.append(check_coord)
+            
+            check_coord = (coord[0], coord[1]-1)
+            if check_coord in droid_map:
+                droid_map.remove(check_coord)
+                filling_with_oxygen.append(check_coord)
+
+        still_left = len(droid_map) > 0
+    print(minutes)
+
+
+#first_task()
 second_task()
