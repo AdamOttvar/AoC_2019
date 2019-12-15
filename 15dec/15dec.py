@@ -1,17 +1,20 @@
 #!python3
 import collections
 
-def plot_path(droid_points, wall_points, oxygen_point):
+def plot_path(droid_points, wall_points, oxygen_point, path_points):
     import matplotlib.pyplot as plt
 
     droid_x_pos =  [x[0] for x in droid_points]
     droid_y_pos =  [x[1] for x in droid_points]
     wall_x_pos =  [x[0] for x in wall_points]
     wall_y_pos =  [x[1] for x in wall_points]
+    path_x_pos =  [x[0] for x in path_points]
+    path_y_pos =  [x[1] for x in path_points]
     fig=plt.figure()
     ax=fig.add_axes([0,0,1,1])
     ax.scatter(wall_x_pos, wall_y_pos, color='r')
     ax.scatter(droid_x_pos, droid_y_pos, color='k')
+    ax.scatter(path_x_pos, path_y_pos, color='g')
     ax.scatter(oxygen_point[0], oxygen_point[1], color='b')
     plt.show()
 
@@ -177,11 +180,11 @@ def update_droid_position(position,direction,droid_map,graph):
         position[0] += 1
     else:
         print("Unknown direction!")
-    droid_map.append(position.copy())
+    droid_map.append((position[0],position[1]))
     if parent_position in graph:
-        graph[parent_position].append(position.copy())
+        graph[parent_position].append((position[0],position[1]))
     else:
-        graph[parent_position] = [position.copy()]
+        graph[parent_position] = [(position[0],position[1])]
 
 def update_wall_position(position,direction,wall_map):
     if direction == 1:
@@ -194,9 +197,10 @@ def update_wall_position(position,direction,wall_map):
         wall_position = [position[0] + 1, position[1]]
     else:
         print("Unknown direction!")
-    wall_map.append(wall_position.copy())
+    wall_map.append((wall_position[0],wall_position[1]))
 
-def set_oxygen_position(position,direction):
+def set_oxygen_position(position,direction,graph):
+    parent_position = (position[0],position[1])
     if direction == 1:
         position[1] += 1
     elif direction == 2:
@@ -207,7 +211,18 @@ def set_oxygen_position(position,direction):
         position[0] += 1
     else:
         print("Unknown direction!")
+    graph[parent_position] = [(position[0],position[1])]
     return position.copy() 
+
+def bfs_paths(graph, start, goal):
+    queue = [(start, [start])]
+    while queue:
+        (vertex, path) = queue.pop(0)
+        for next_vert in set(graph[vertex])-set(path):
+            if next_vert == goal:
+                yield path + [next_vert]
+            else:
+                queue.append((next_vert, path + [next_vert]))
 
 def first_task():
     repair_droid = IntcodeComputer()
@@ -253,16 +268,78 @@ def first_task():
                 if output == 1:
                     update_droid_position(droid_position,direction,droid_map,droid_graph)
             elif output == 2:
-                oxygen_position = set_oxygen_position(droid_position,direction)
-                droid_map.append(oxygen_position)
+                oxygen_position = set_oxygen_position(droid_position,direction,droid_graph)
+                droid_map.append((oxygen_position[0],oxygen_position[1]))
 
         elif output == 2:
-            oxygen_position = set_oxygen_position(droid_position,direction)
-            droid_map.append(oxygen_position)
+            oxygen_position = set_oxygen_position(droid_position,direction,droid_graph)
+            droid_map.append((oxygen_position[0],oxygen_position[1]))
 
         if droid_position == [0,0]:
             terminated = True
 
-    plot_path(droid_map, wall_positions, oxygen_position)
+    path = list(bfs_paths(droid_graph, (0,0), (oxygen_position[0],oxygen_position[1])))[0] # [['A', 'C', 'F'], ['A', 'B', 'E', 'F']]
+    plot_path(droid_map, wall_positions, oxygen_position, path)
+    print(len(path)-1)
+
+
+def second_task():
+    repair_droid = IntcodeComputer()
+    repair_droid.read_input('input15.txt')
+    nbr_of_commands = 0
+    droid_map = []
+    droid_graph = {}
+    droid_position = [0,0]
+    droid_map.append(droid_position.copy())
+    wall_positions = []
+    direction = 1
+    oxygen_position = [0,0]
+    # 1->4 2->3 3->1 4->2
+    right_direction = {1:4, 2:3, 3:1, 4:2}
+    # 1->4 2->3 3->1 4->2
+    left_direction = {1:3, 2:4, 3:2, 4:1}
+
+    terminated = False
+    while not terminated:
+        direction = right_direction[direction]
+        repair_droid.input = direction
+        return_code = repair_droid.execute_complete_program()
+        nbr_of_commands += 1
+        output = repair_droid.get_output()
+        if output == 1:
+            update_droid_position(droid_position,direction,droid_map,droid_graph)
+        elif output == 0:
+            update_wall_position(droid_position,direction,wall_positions)
+            direction = left_direction[direction]
+            repair_droid.input = direction
+            return_code = repair_droid.execute_complete_program()
+            nbr_of_commands += 1
+            output = repair_droid.get_output()
+            if output == 1:
+                update_droid_position(droid_position,direction,droid_map,droid_graph)
+            elif output == 0:
+                update_wall_position(droid_position,direction,wall_positions)
+                direction = left_direction[direction]
+                repair_droid.input = direction
+                return_code = repair_droid.execute_complete_program()
+                nbr_of_commands += 1
+                output = repair_droid.get_output()
+                if output == 1:
+                    update_droid_position(droid_position,direction,droid_map,droid_graph)
+            elif output == 2:
+                oxygen_position = set_oxygen_position(droid_position,direction,droid_graph)
+                droid_map.append((oxygen_position[0],oxygen_position[1]))
+
+        elif output == 2:
+            oxygen_position = set_oxygen_position(droid_position,direction,droid_graph)
+            droid_map.append((oxygen_position[0],oxygen_position[1]))
+
+        if droid_position == [0,0]:
+            terminated = True
+
+    path = list(bfs_paths(droid_graph, (0,0), (oxygen_position[0],oxygen_position[1])))[0] # [['A', 'C', 'F'], ['A', 'B', 'E', 'F']]
+    plot_path(droid_map, wall_positions, oxygen_position, path)
+    print(len(path)-1)
 
 first_task()
+second_task()
