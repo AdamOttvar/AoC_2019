@@ -193,7 +193,60 @@ def first_task():
 
     print("Number of points: {}".format(nbr_of_beam))
 
+
+def second_task():
+    drone_system = IntcodeComputer()
+    drone_system.read_input('input19.txt')
+    upper_bound = 0.0
+    lower_bound = 9.0
+
+    """
+    for y_pos in range(1100,1400):
+        row = []
+        for x_pos in range(800,900):
+            drone_system.reset()
+            drone_system.input = x_pos
+            return_code = drone_system.execute_complete_program()
+            drone_system.input = y_pos
+            return_code = drone_system.execute_complete_program()
+            return_code = drone_system.execute_complete_program()
+            output = drone_system.get_output()
+            if output:
+                if x_pos == 0 and y_pos == 0:
+                    continue
+                if float(y_pos)/float(x_pos) > upper_bound:
+                    upper_bound = float(y_pos)/float(x_pos)
+                    upper_point = [x_pos, y_pos]
+                if float(y_pos)/float(x_pos) < lower_bound:
+                    lower_bound = float(y_pos)/float(x_pos)
+                    lower_point = [x_pos, y_pos]
+    """
+
+    upper_point = [824, 1394]
+    lower_point = [854, 1127]
+
+    print("Upper: {}".format(upper_bound))
+    print("Point: {}".format(upper_point))
+    print("Lower: {}".format(lower_bound))
+    print("Point: {}".format(lower_point))
+
+    found = False
+    x_coord = 50
+    while not found:
+        y_max = int(x_coord*float(upper_point[1])/float(upper_point[0]))
+        y_min = int(x_coord*float(lower_point[1])/float(lower_point[0]))
+        for y_coord in range(y_min, y_max):
+            x_check = float(y_coord)/float(x_coord+100) >= float(lower_point[1])/float(lower_point[0])
+            y_check = float(y_coord+100)/float(x_coord) >= float(upper_point[1])/float(upper_point[0])
+            if x_check and y_check:
+                found = True
+                print("Point: {}, {}".format(x_coord,y_coord))
+                print("Answer: {}".format(x_coord*10000+y_coord))
+                break
+        x_coord += 1
+
+    
                 
-first_task()
+second_task()
 
         
