@@ -164,6 +164,16 @@ class IntcodeComputer:
             print("Something went wrong!")
             return -1
 
+def check_one_position(computer, x_coord, y_coord):
+    computer.reset()
+    computer.input = x_coord
+    return_code = computer.execute_complete_program()
+    computer.input = y_coord
+    return_code = computer.execute_complete_program()
+    return_code = computer.execute_complete_program()
+    return computer.get_output()
+
+
 def first_task():
     drone_system = IntcodeComputer()
     drone_system.read_input('input19.txt')
@@ -174,13 +184,7 @@ def first_task():
     for y_pos in range(0,50):
         row = []
         for x_pos in range(0,50):
-            drone_system.reset()
-            drone_system.input = x_pos
-            return_code = drone_system.execute_complete_program()
-            drone_system.input = y_pos
-            return_code = drone_system.execute_complete_program()
-            return_code = drone_system.execute_complete_program()
-            output = drone_system.get_output()
+            output = check_one_position(drone_system, x_pos, y_pos)
             if output:
                 nbr_of_beam += 1
                 row.append('#')
@@ -245,8 +249,7 @@ def second_task():
                 break
         x_coord += 1
 
-    
-                
+          
 second_task()
 
         
