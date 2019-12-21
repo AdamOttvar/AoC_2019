@@ -33,38 +33,6 @@ def analyze_map(cave_map):
                 all_keys.add(cave_map[y][x])
     return start_pos, all_keys
 
-"""
-def bfs_explore(start_pos, cave_map, all_keys):
-    #start_pos = (0,0,0,set())
-    visited = set()
-    queue = collections.deque([(start_pos[0],start_pos[1],0,set())])
-    while queue:
-        vertex = queue.popleft()
-        visited.add((vertex[0],vertex[1]))
-        current_keys = vertex[3]
-        new_distance = vertex[2] + 1
-
-        # If we haven't got the key yet, skip
-        if cave_map[vertex[1]][vertex[0]].isupper() and \
-           cave_map[vertex[1]][vertex[0]].lower() not in current_keys:
-           continue
-        valid_passages = check_passage(vertex[0],vertex[1],cave_map)
-        for passage in valid_passages:
-            if (passage[0],passage[1]) in visited:
-                continue
-
-            if cave_map[passage[1]][passage[0]].islower():
-                current_keys.add(cave_map[passage[1]][passage[0]])
-                if len(current_keys) == len(all_keys):
-                    print("Goal: ")
-                    print(new_distance)
-
-            
-            queue.append((passage[0],passage[1],new_distance,current_keys))
-
-    #print(visited)
-
-"""
 def bfs_explore(start_pos, cave_map, all_keys):
     #start_pos = (x,y,0,set())
     visited = set()
@@ -76,14 +44,11 @@ def bfs_explore(start_pos, cave_map, all_keys):
             continue
         visited.add(key)
 
-        print('{}    {}'.format(cave_map[vertex[1]][vertex[0]], vertex[3]))
-
         if cave_map[vertex[1]][vertex[0]].isupper() and \
            cave_map[vertex[1]][vertex[0]].lower() not in vertex[3]:
-           print(cave_map[vertex[1]][vertex[0]])
            continue
 
-        current_keys = vertex[3]
+        current_keys = vertex[3].copy()
         if cave_map[vertex[1]][vertex[0]].islower():
             current_keys.add(cave_map[vertex[1]][vertex[0]])
             if current_keys == all_keys:
